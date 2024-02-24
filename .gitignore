@@ -3,5 +3,7 @@ node_modules/
 keys/
 
 .env
+.env.test
+coverage/
 
 postgres/

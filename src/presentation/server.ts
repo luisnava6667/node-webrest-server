@@ -1,6 +1,6 @@
 import express, { Router } from 'express'
 import path from 'path'
-
+import compression from 'compression'
 interface Options {
   port: number
   routes: Router
@@ -8,7 +8,9 @@ interface Options {
 }
 
 export class Server {
-  private app = express()
+  public readonly app = express()
+
+  private serverListener?: any
   private readonly port: number
   private readonly publicPath: string
   private readonly routes: Router
@@ -23,6 +25,7 @@ export class Server {
     //* Middleware
     this.app.use(express.json()) //raw
     this.app.use(express.urlencoded({ extended: true })) //x-www-form-urlencoded
+    this.app.use(compression())
 
     //* Public Folder
     this.app.use(express.static(this.publicPath))
@@ -39,8 +42,11 @@ export class Server {
       return
     })
 
-    this.app.listen(this.port, () => {
+    this.serverListener = this.app.listen(this.port, () => {
       console.log(`Server running on port ${this.port}`)
     })
+  }
+  public close() {
+    this.serverListener?.close()
   }
 }
